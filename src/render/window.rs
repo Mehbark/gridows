@@ -100,12 +100,12 @@ impl StringDisplay {
         y: usize,
         new_char: char,
     ) -> usize {
-        if y >= self.height || from_x >= to_x || to_x >= self.width {
+        if y >= self.height || from_x >= to_x || from_x >= self.width {
             return 0;
         }
 
         if to_x >= self.width {
-            self.vec_form[y].splice(from_x..self.height, vec![new_char; self.width - from_x - 1]);
+            self.vec_form[y].splice(from_x..self.height, vec![new_char; self.width - from_x]);
             return self.width - from_x - 1;
         }
 
@@ -160,6 +160,7 @@ impl Window {
             State::Inactive => WindowCharacters::new('┌', '┐', '└', '┘', '─', '│'),
         }
     }
+
     pub fn render(&self) -> String {
         let mut disp = StringDisplay::new(self.width, self.height, '.');
 
@@ -208,5 +209,21 @@ impl Window {
             y = self.y,
             render = self.render()
         );
+    }
+}
+
+impl Window {
+    pub fn first_active_child(&self) -> Option<usize> {
+        for i in 0..self.children.len() {
+            if self.children[i].state.is_active() {
+                return Some(i);
+            }
+        }
+        None
+    }
+
+    pub fn change_active(&mut self, deactivate: usize, activate: usize) {
+        self.children[deactivate].state = State::Inactive;
+        self.children[activate].state = State::Active;
     }
 }
