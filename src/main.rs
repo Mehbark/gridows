@@ -3,6 +3,10 @@ use window::Window;
 mod window;
 
 fn main() {
-    let win = Window::new(10, 10, 0, 0, Some(vec![Window::new(1, 1, 1, 1, None)]));
-    println!("{:#?}", win);
+    let win = Window::new_master(
+        10,
+        10,
+        vec![Window::new_empty(5, 5, 2, 2), Window::new_empty(5, 5, 0, 0)],
+    );
+    println!("{}", win.render());
 }
