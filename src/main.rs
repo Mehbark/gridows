@@ -1,14 +1,27 @@
+mod window;
+use std::io::prelude::*;
+use std::io::{self, Read};
 use window::Window;
 
-mod window;
-
-fn main() {
+fn main() -> io::Result<()> {
     let mut win = Window::new_master(
         10,
         10,
         vec![Window::new_empty(5, 5, 2, 2), Window::new_empty(5, 5, 0, 0)],
     );
-    win.draw();
-    win.children[0].x += 1;
-    win.draw();
+
+    let mut buffer;
+    let mut inp;
+
+    loop {
+        buffer = vec![0];
+        inp = 0;
+
+        while inp == 0 {
+            inp = io::stdin().read(&mut buffer)?;
+        }
+
+        win.draw();
+        println!("{}", String::from_utf8(buffer).expect("failed to parse input").trim());
+    }
 }
