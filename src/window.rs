@@ -1,10 +1,10 @@
 #[derive(Debug)]
 pub struct Window {
-    width: usize,
-    height: usize,
-    x: usize,
-    y: usize,
-    children: Vec<Window>,
+    pub width: usize,
+    pub height: usize,
+    pub x: usize,
+    pub y: usize,
+    pub children: Vec<Window>,
 }
 
 //Creation functions
@@ -75,5 +75,9 @@ impl Window {
         }
 
         rows.join("\n")
+    }
+
+    pub fn draw(&self) {
+        print!("\x1b[J\x1b[{x};{y}H{render}", x = self.x, y = self.y, render = self.render());
     }
 }
