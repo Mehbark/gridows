@@ -67,7 +67,7 @@ impl Window {
     }
 }
 
-struct StringDisplay {
+pub struct StringDisplay {
     vec_form: Vec<Vec<char>>,
     width: usize,
     height: usize,
@@ -124,32 +124,77 @@ impl std::fmt::Display for StringDisplay {
         write!(f, "{}", rows.join("\n"))
     }
 }
+pub struct WindowCharacters {
+    top_left: char,
+    top_right: char,
+    bottom_left: char,
+    bottom_right: char,
+    horizontal: char,
+    vertical: char,
+}
+
+impl WindowCharacters {
+    pub fn new(
+        top_left: char,
+        top_right: char,
+        bottom_left: char,
+        bottom_right: char,
+        horizontal: char,
+        vertical: char,
+    ) -> Self {
+        Self {
+            top_left,
+            top_right,
+            bottom_left,
+            bottom_right,
+            horizontal,
+            vertical,
+        }
+    }
+}
 
 impl Window {
+    pub fn get_window_characters(&self) -> WindowCharacters {
+        match self.state {
+            State::Active => WindowCharacters::new('╔', '╗', '╚', '╝', '═', '║'),
+            State::Inactive => WindowCharacters::new('┌', '┐', '└', '┘', '─', '│'),
+        }
+    }
     pub fn render(&self) -> String {
         let mut disp = StringDisplay::new(self.width, self.height, '.');
 
         for child in &self.children {
+            let chars = child.get_window_characters();
             //Corners
-            disp.change_char(child.x, child.y, '┌'); //Top-left corner
-            disp.change_char(child.x + child.width - 1, child.y, '┐'); //Top-right corner
-            disp.change_char(child.x, child.y + child.height - 1, '└'); //Bottom-left corner
-            disp.change_char(child.x + child.width - 1, child.y + child.height - 1, '┘'); //Bottom-right corner
+            disp.change_char(child.x, child.y, chars.top_left); //Top-left corner
+            disp.change_char(child.x + child.width - 1, child.y, chars.top_right); //Top-right corner
+            disp.change_char(child.x, child.y + child.height - 1, chars.bottom_left); //Bottom-left corner
+            disp.change_char(
+                child.x + child.width - 1,
+                child.y + child.height - 1,
+                chars.bottom_right,
+            ); //Bottom-right corner
 
             //Sides
             //Top side
-            disp.change_chars_in_slice(child.x + 1, child.x + child.width - 1, child.y, '─');
+            disp.change_chars_in_slice(
+                child.x + 1,
+                child.x + child.width - 1,
+                child.y,
+                chars.horizontal,
+            );
             //Bottom side
             disp.change_chars_in_slice(
                 child.x + 1,
                 child.x + child.width - 1,
                 child.y + child.height - 1,
-                '─',
+                chars.horizontal,
             );
             //Vertical sides
             for row_num in (child.y + 1)..(child.y + child.height - 1) {
-                disp.change_char(child.x, row_num, '│'); //Left Side
-                disp.change_char(child.x + child.width - 1, row_num, '│'); //Right Side
+                disp.change_char(child.x, row_num, chars.vertical); //Left Side
+                disp.change_char(child.x + child.width - 1, row_num, chars.vertical);
+                //Right Side
             }
         }
 

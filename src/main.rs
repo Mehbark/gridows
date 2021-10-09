@@ -3,6 +3,8 @@ use std::io::prelude::*;
 use std::io::{self, Read};
 use window::Window;
 
+use crate::window::State;
+
 fn main() -> io::Result<()> {
     let mut win = Window::new_master(
         10,
@@ -12,6 +14,7 @@ fn main() -> io::Result<()> {
 
     let mut buffer;
     let mut inp;
+    win.children[0].state = State::Active;
 
     loop {
         buffer = vec![0];
@@ -22,6 +25,11 @@ fn main() -> io::Result<()> {
         }
 
         win.draw();
-        println!("{}", String::from_utf8(buffer).expect("failed to parse input").trim());
+        println!(
+            "{}",
+            String::from_utf8(buffer)
+                .expect("failed to parse input")
+                .trim()
+        );
     }
 }
